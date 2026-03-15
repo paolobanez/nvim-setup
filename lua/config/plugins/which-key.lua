@@ -12,7 +12,7 @@ return {
       { '<leader>r', group = '[R]ename / [R]esume' },
       { '<leader>c', group = '[C]ode' },
       { '<leader>d', group = '[D]iagnostics' },
-      { 'g', group = '[G]oto' },
+      { '<leader>g', group = '[G]it' },
     },
   },
 }
