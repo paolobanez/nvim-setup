@@ -42,9 +42,33 @@ return {
     vim.keymap.set('n', '<leader>sq', builtin.quickfix, { desc = '[S]earch [Q]uickfix' })
 
     vim.keymap.set('n', '<leader>gs', builtin.git_status, { desc = '[G]it [S]tatus' })
-    vim.keymap.set('n', '<leader>gb', builtin.git_branches, { desc = '[G]it [B]ranches' })
-    vim.keymap.set('n', '<leader>gg', builtin.git_bcommits, { desc = '[G]it Buffer Commits' })
-    vim.keymap.set('n', '<leader>gc', builtin.git_commits, { desc = '[G]it [C]ommits' })
+    vim.keymap.set('n', '<leader>gb', function()
+      builtin.git_bcommits({
+        git_command = {
+          'git',
+          '--no-pager',
+          'log',
+          '--pretty=tformat:%h %s | %an | %ad',
+          '--abbrev-commit',
+          '--date=format-local:%Y-%m-%d %I:%M %p',
+          '--follow',
+        },
+      })
+    end, { desc = '[G]it [B]uffer Commits' })
+    vim.keymap.set('n', '<leader>gc', function()
+      builtin.git_commits({
+        git_command = {
+          'git',
+          '--no-pager',
+          'log',
+          '--pretty=tformat:%h %s | %an | %ad',
+          '--abbrev-commit',
+          '--date=format-local:%Y-%m-%d %I:%M %p',
+          '--',
+          '.',
+        },
+      })
+    end, { desc = '[G]it [C]ommits' })
     vim.keymap.set('n', '<leader>gh', builtin.git_stash, { desc = '[G]it stas[H]' })
     vim.keymap.set(
       'n',
