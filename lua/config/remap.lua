@@ -19,8 +19,8 @@ end, { desc = 'Show line [D]iagnostics' })
 vim.keymap.set('n', '-', '<cmd>Oil<CR>', { desc = 'Open parent directory' })
 
 -- Buffer navigation
-vim.keymap.set('n', '<Tab>', ':bn<CR>', { desc = 'Switches to next buffer' })
-vim.keymap.set('n', '<S-Tab>', ':bp<CR>', { desc = 'Switches to previous buffer' })
+vim.keymap.set('n', '<S-l>', ':bn<CR>', { desc = 'Switches to next buffer' })
+vim.keymap.set('n', '<S-h>', ':bp<CR>', { desc = 'Switches to previous buffer' })
 
 -- Split window navigation: CTRL+<hjkl>
 vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
