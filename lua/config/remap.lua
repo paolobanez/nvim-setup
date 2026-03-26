@@ -9,6 +9,7 @@ vim.keymap.set(
 )
 vim.keymap.set('n', '<leader>w', ':w<CR>', { silent = true, desc = '[W]rite file' })
 vim.keymap.set('n', '<leader>q', ':bd<CR>', { silent = true, desc = '[Q]uit buffer' })
+vim.keymap.set('n', '<leader>bd', ':bd<CR>', { silent = true, desc = '[B]uffer [D]elete' })
 
 -- Diagnostics
 vim.keymap.set('n', '<leader>d', function()
@@ -16,6 +17,7 @@ vim.keymap.set('n', '<leader>d', function()
 end, { desc = 'Show line [D]iagnostics' })
 
 -- Oil
+vim.keymap.set('n', '<leader>e', '<cmd>e .<CR>', { desc = 'Open current directory/file explorer' })
 vim.keymap.set('n', '-', '<cmd>Oil<CR>', { desc = 'Open parent directory' })
 
 -- Buffer navigation
