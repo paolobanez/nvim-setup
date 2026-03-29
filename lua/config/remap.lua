@@ -12,7 +12,7 @@ vim.keymap.set('n', '<leader>q', ':bd<CR>', { silent = true, desc = '[Q]uit buff
 vim.keymap.set('n', '<leader>bd', ':bd<CR>', { silent = true, desc = '[B]uffer [D]elete' })
 
 -- Diagnostics
-vim.keymap.set('n', '<leader>d', function()
+vim.keymap.set('n', '<leader>dd', function()
   vim.diagnostic.open_float(nil, { focusable = true })
 end, { desc = 'Show line [D]iagnostics' })
 

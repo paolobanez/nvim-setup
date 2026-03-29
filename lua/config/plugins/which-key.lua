@@ -11,7 +11,7 @@ return {
       { '<leader>p', group = '[P]ersistence' },
       { '<leader>r', group = '[R]ename / [R]esume' },
       { '<leader>c', group = '[C]ode' },
-      { '<leader>d', group = '[D]iagnostics' },
+      { '<leader>d', group = '[D]iagnostics / [D]ebug' },
       { '<leader>g', group = '[G]it' },
     },
   },

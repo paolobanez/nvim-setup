@@ -5,6 +5,7 @@ return {
 
   config = function()
     require('nvim-treesitter').install({
+      'c_sharp',
       'javascript',
       'typescript',
       'tsx',
@@ -13,6 +14,7 @@ return {
       'html',
       'lua',
       'prisma',
+      'xml',
     })
 
     vim.api.nvim_create_autocmd('FileType', {

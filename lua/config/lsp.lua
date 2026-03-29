@@ -1,6 +1,7 @@
 local M = {}
 
 M.servers = {
+  'omnisharp',
   'cssls',
   'eslint',
   'html',
@@ -10,6 +11,45 @@ M.servers = {
   'prismals',
   'tailwindcss',
 }
+
+local function dotnet_root(bufnr, on_dir)
+  local bufname = vim.api.nvim_buf_get_name(bufnr)
+  local start = vim.fs.dirname(bufname)
+  local project_file = vim.fs.find(function(name)
+    return name:match('%.sln$') ~= nil or name:match('%.csproj$') ~= nil
+  end, { path = start, upward = true, type = 'file' })[1]
+
+  if project_file then
+    on_dir(vim.fs.dirname(project_file))
+    return
+  end
+
+  local git_root = vim.fs.root(bufnr, '.git')
+  on_dir(git_root or vim.fn.getcwd())
+end
+
+local function tailwind_root(bufnr, on_dir)
+  local bufname = vim.api.nvim_buf_get_name(bufnr)
+  local start = vim.fs.dirname(bufname)
+  local config_file = vim.fs.find({
+    'tailwind.config.js',
+    'tailwind.config.cjs',
+    'tailwind.config.mjs',
+    'tailwind.config.ts',
+    'tailwind.config.cts',
+    'tailwind.config.mts',
+    'postcss.config.js',
+    'postcss.config.cjs',
+    'postcss.config.mjs',
+    'postcss.config.ts',
+    'postcss.config.cts',
+    'postcss.config.mts',
+  }, { path = start, upward = true, type = 'file' })[1]
+
+  if config_file then
+    on_dir(vim.fs.dirname(config_file))
+  end
+end
 
 local function prisma_root(bufnr, on_dir)
   local bufname = vim.api.nvim_buf_get_name(bufnr)
@@ -71,6 +111,9 @@ function M.setup()
 
   set_keymaps()
 
+  -- Some servers emit a VS Code specific command. Ignore it in Neovim.
+  vim.lsp.commands['setContext'] = vim.lsp.commands['setContext'] or function() end
+
   vim.lsp.config('*', {
     capabilities = capabilities,
   })
@@ -96,6 +139,27 @@ function M.setup()
       local fmt = prisma_fmt_path(root_dir)
       new_config.settings.prisma.prismaFmtBinPath = fmt ~= '' and fmt or ''
     end,
+  })
+
+  vim.lsp.config('tailwindcss', {
+    root_dir = tailwind_root,
+  })
+
+  vim.lsp.config('omnisharp', {
+    root_dir = dotnet_root,
+    cmd_env = {
+      DOTNET_ROLL_FORWARD = 'Major',
+    },
+    settings = {
+      RoslynExtensionsOptions = {
+        EnableAnalyzersSupport = true,
+        EnableImportCompletion = true,
+        AnalyzeOpenDocumentsOnly = true,
+      },
+      MsBuild = {
+        LoadProjectsOnDemand = true,
+      },
+    },
   })
 
   local has_mason_lspconfig, mason_lspconfig = pcall(require, 'mason-lspconfig')
