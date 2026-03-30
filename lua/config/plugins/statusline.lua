@@ -17,11 +17,6 @@ return {
           {
             'diff',
             colored = true,
-            diff_color = {
-              added = { fg = '#216609', gui = 'bold' },
-              modified = { fg = '#a55000', gui = 'bold' },
-              removed = { fg = '#cc3e28', gui = 'bold' },
-            },
             symbols = {
               added = '+',
               modified = '~',

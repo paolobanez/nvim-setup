@@ -1,13 +1,29 @@
 return {
-  "yorickpeterse/vim-paper",
-  name = "paper",
+  "EdenEast/nightfox.nvim",
+  opts = {
+    transparent = false,     -- Disable setting background
+    terminal_colors = true,  -- Set terminal colors (vim.g.terminal_color_*) used in `:terminal`
+    dim_inactive = false,    -- Non focused panes set to alternative background
+    module_default = true,   -- Default enable value for modules
+    styles = {               -- Style to be applied to different syntax groups
+      comments = "NONE",     -- Value is any valid attr-list value `:help attr-list`
+      conditionals = "NONE",
+      constants = "NONE",
+      functions = "NONE",
+      keywords = "NONE",
+      numbers = "NONE",
+      operators = "NONE",
+      strings = "NONE",
+      types = "NONE",
+      variables = "NONE",
+    },
+    inverse = {             -- Inverse highlight for different types
+      match_paren = false,
+      visual = false,
+      search = false,
+    },
+  },
   config = function()
-    vim.cmd("colorscheme paper")
-
-    local custom_bg = "#E8E4E1"
-    vim.cmd(("highlight Normal guibg=%s"):format(custom_bg))
-    vim.cmd(("highlight NormalNC guibg=%s"):format(custom_bg))
-    vim.cmd(("highlight SignColumn guibg=%s"):format(custom_bg))
-    vim.cmd(("highlight EndOfBuffer guibg=%s"):format(custom_bg))
+    vim.cmd("colorscheme carbonfox")
   end,
 }
