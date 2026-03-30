@@ -32,7 +32,8 @@ return {
         concealcursor = "nvic",
       },
       -- Send deleted files to the trash instead of permanently deleting them (:help oil-trash)
-      delete_to_trash = false,
+      -- Workaround for crashes when recursively deleting large directories on macOS.
+      delete_to_trash = true,
       -- Skip the confirmation popup for simple operations (:help oil.skip_confirm_for_simple_edits)
       skip_confirm_for_simple_edits = false,
       -- Selecting a new/moved/renamed file or directory will prompt you to save changes first
@@ -44,7 +45,8 @@ return {
       cleanup_delay_ms = 2000,
       lsp_file_methods = {
         -- Enable or disable LSP file operations
-        enabled = true,
+        -- Workaround for a Neovim/Oil crash on some macOS setups when deleting large directories.
+        enabled = false,
         -- Time to wait for LSP file operations to complete before skipping
         timeout_ms = 1000,
         -- Set to true to autosave buffers that are updated with LSP willRenameFiles
