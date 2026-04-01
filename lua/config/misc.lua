@@ -63,3 +63,9 @@ function Trim()
 end
 
 vim.keymap.set('n', '<Leader>tt', Trim, { desc = 'Trimmed ^M line endings' })
+
+
+if vim.fn.getenv("TERM_PROGRAM") == "ghostty" then
+  vim.opt.title = true
+  vim.opt.titlestring = "nvim - %{fnamemodify(getcwd(), ':t')}"
+end

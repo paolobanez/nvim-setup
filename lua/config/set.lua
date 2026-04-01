@@ -46,6 +46,7 @@ vim.opt.number = true
 vim.opt.cursorline = true
 vim.opt.signcolumn = "yes:1"
 vim.opt.scrolloff = 8
+vim.opt.updatetime = 250
 vim.opt.showcmd = true
 
 vim.opt.swapfile = false

@@ -82,12 +82,62 @@ local function prisma_fmt_path(root_dir)
   return vim.fn.exepath('prisma-fmt')
 end
 
+local function set_document_highlight(client, bufnr)
+  if not client:supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight) then
+    return
+  end
+
+  if vim.b[bufnr].document_highlight_enabled then
+    return
+  end
+
+  vim.b[bufnr].document_highlight_enabled = true
+
+  local group = vim.api.nvim_create_augroup(('config-lsp-document-highlight-%d'):format(bufnr), { clear = true })
+
+  vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
+    group = group,
+    buffer = bufnr,
+    callback = vim.lsp.buf.document_highlight,
+  })
+
+  vim.api.nvim_create_autocmd({ 'CursorMoved', 'CursorMovedI', 'InsertEnter', 'BufLeave' }, {
+    group = group,
+    buffer = bufnr,
+    callback = vim.lsp.buf.clear_references,
+  })
+
+  vim.api.nvim_create_autocmd('LspDetach', {
+    group = group,
+    buffer = bufnr,
+    callback = function(event)
+      local has_other_highlight_client = false
+      for _, attached_client in ipairs(vim.lsp.get_clients({ bufnr = bufnr })) do
+        if attached_client.id ~= event.data.client_id
+          and attached_client:supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight) then
+          has_other_highlight_client = true
+          break
+        end
+      end
+
+      if has_other_highlight_client then
+        return
+      end
+
+      vim.lsp.buf.clear_references()
+      pcall(vim.api.nvim_del_augroup_by_id, group)
+      vim.b[bufnr].document_highlight_enabled = false
+    end,
+  })
+end
+
 local function set_keymaps()
   local group = vim.api.nvim_create_augroup('config-lsp-keymaps', { clear = true })
 
   vim.api.nvim_create_autocmd('LspAttach', {
     group = group,
     callback = function(event)
+      local client = vim.lsp.get_client_by_id(event.data.client_id)
       local map = function(lhs, rhs, desc)
         vim.keymap.set('n', lhs, rhs, { buffer = event.buf, silent = true, desc = desc })
       end
@@ -99,6 +149,10 @@ local function set_keymaps()
       map('K', vim.lsp.buf.hover, 'Hover docs')
       map('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame symbol')
       map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
+
+      if client then
+        set_document_highlight(client, event.buf)
+      end
     end,
   })
 
