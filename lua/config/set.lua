@@ -43,6 +43,8 @@ vim.opt.listchars = {
 
 vim.opt.wrap = false
 vim.opt.number = true
+vim.opt.numberwidth = 4
+vim.opt.statuscolumn = "%s%l    "
 vim.opt.cursorline = true
 vim.opt.signcolumn = "yes:1"
 vim.opt.scrolloff = 8
