@@ -41,7 +41,8 @@ vim.opt.listchars = {
   precedes = '<',
 }
 
-vim.opt.wrap = false
+vim.opt.wrap = true
+vim.opt.linebreak = true
 vim.opt.number = true
 vim.opt.numberwidth = 4
 vim.opt.statuscolumn = "%s%l    "
