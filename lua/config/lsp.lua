@@ -195,6 +195,36 @@ function M.setup()
     end,
   })
 
+  vim.lsp.config('eslint', {
+    root_dir = function(bufnr, on_dir)
+      local root = vim.fs.root(bufnr, {
+        'eslint.config.js',
+        'eslint.config.mjs',
+        'eslint.config.cjs',
+        'eslint.config.ts',
+        'eslint.config.mts',
+        'eslint.config.cts',
+        '.eslintrc',
+        '.eslintrc.js',
+        '.eslintrc.cjs',
+        '.eslintrc.yaml',
+        '.eslintrc.yml',
+        '.eslintrc.json',
+      })
+      if root then
+        on_dir(root)
+      end
+    end,
+    handlers = {
+      ['textDocument/diagnostic'] = function(err, result, ctx, config)
+        if err and err.message and err.message:find('Could not find config file') then
+          return
+        end
+        return vim.lsp.diagnostic.on_diagnostic(err, result, ctx, config)
+      end,
+    },
+  })
+
   vim.lsp.config('tailwindcss', {
     root_dir = tailwind_root,
   })
