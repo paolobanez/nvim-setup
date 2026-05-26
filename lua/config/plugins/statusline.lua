@@ -4,7 +4,7 @@ return {
 
   config = function()
     require('lualine').setup({
-      theme = 'auto',
+      theme = 'bamboo',
       options = {
         icons_enabled = false,
         component_separators = '',
