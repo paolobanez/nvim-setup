@@ -33,7 +33,6 @@ vim.opt.smartindent = true
 vim.opt.smarttab = true
 vim.opt.list = true
 vim.opt.listchars = {
-  eol = '.',
   tab = '>-',
   trail = '~',
   nbsp = '␣',
