@@ -1,13 +1,18 @@
 return {
-  "the-coding-doggo/batman.nvim",
+  "datsfilipe/vesper.nvim",
   lazy = false,
   priority = 1000,
   opts = {
-    theme = "classic",
-    use_persistence = false,
+    italics = {
+      comments = false,
+      keywords = false,
+      functions = false,
+      strings = false,
+      variables = false,
+    },
   },
   config = function(_, opts)
-    require("batman").setup(opts)
-    require("batman").load()
+    require("vesper").setup(opts)
+    vim.cmd("colorscheme vesper")
   end,
 }
