@@ -8,6 +8,7 @@ return {
       'omnisharp',
       'csharpier',
       'netcoredbg',
+      'js-debug-adapter',
     },
   },
 }

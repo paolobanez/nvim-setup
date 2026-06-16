@@ -48,6 +48,57 @@ return {
       },
     }
 
+    dap.adapters['node-terminal'] = {
+      type = 'server',
+      host = 'localhost',
+      port = '${port}',
+      executable = {
+        command = 'node',
+        args = {
+          vim.fn.stdpath('data') .. '/mason/packages/js-debug-adapter/js-debug/src/dapDebugServer.js',
+          '${port}',
+        },
+      },
+    }
+
+    dap.adapters['pwa-node'] = {
+      type = 'server',
+      host = 'localhost',
+      port = '${port}',
+      executable = {
+        command = 'node',
+        args = {
+          vim.fn.stdpath('data') .. '/mason/packages/js-debug-adapter/js-debug/src/dapDebugServer.js',
+          '${port}',
+        },
+      },
+    }
+
+    for _, lang in ipairs({ 'javascript', 'typescript', 'javascriptreact', 'typescriptreact' }) do
+      dap.configurations[lang] = {
+        {
+          type = 'pwa-node',
+          request = 'launch',
+          name = 'Next.js (server)',
+          runtimeExecutable = 'node',
+          runtimeArgs = { '--inspect', '${workspaceFolder}/node_modules/.bin/next', 'dev' },
+          cwd = '${workspaceFolder}',
+          sourceMaps = true,
+          resolveSourceMapLocations = { '${workspaceFolder}/**', '!**/node_modules/**' },
+          skipFiles = { '<node_internals>/**', '**/node_modules/**' },
+        },
+        {
+          type = 'pwa-node',
+          request = 'attach',
+          name = 'Attach to Next.js',
+          port = 9229,
+          cwd = '${workspaceFolder}',
+          sourceMaps = true,
+          skipFiles = { '<node_internals>/**', '**/node_modules/**' },
+        },
+      }
+    end
+
     vim.keymap.set('n', '<F5>', dap.continue, { desc = 'Debug: Continue/Start' })
     vim.keymap.set('n', '<F10>', dap.step_over, { desc = 'Debug: Step over' })
     vim.keymap.set('n', '<F11>', dap.step_into, { desc = 'Debug: Step into' })
