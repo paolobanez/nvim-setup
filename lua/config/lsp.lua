@@ -93,12 +93,65 @@ local function set_document_highlight(client, bufnr)
 
   vim.b[bufnr].document_highlight_enabled = true
 
+  local function goto_reference(direction)
+    local refs = vim.b[bufnr].lsp_references or {}
+    if #refs == 0 then return end
+    local cursor = vim.api.nvim_win_get_cursor(0)
+    local cur_line, cur_col = cursor[1] - 1, cursor[2]
+
+    -- find which ref the cursor is currently inside (range start <= cursor < range end)
+    local cur_idx
+    for i, ref in ipairs(refs) do
+      local s, e = ref.range.start, ref.range['end']
+      local on = (s.line < cur_line or (s.line == cur_line and s.character <= cur_col))
+             and (e.line > cur_line or (e.line == cur_line and e.character > cur_col))
+      if on then cur_idx = i; break end
+    end
+
+    local target_idx
+    if cur_idx then
+      target_idx = direction == 'next'
+        and (cur_idx < #refs and cur_idx + 1 or 1)
+        or  (cur_idx > 1    and cur_idx - 1 or #refs)
+    else
+      if direction == 'next' then
+        for i, ref in ipairs(refs) do
+          local s = ref.range.start
+          if s.line > cur_line or (s.line == cur_line and s.character > cur_col) then
+            target_idx = i; break
+          end
+        end
+        target_idx = target_idx or 1
+      else
+        for i = #refs, 1, -1 do
+          local s = refs[i].range.start
+          if s.line < cur_line or (s.line == cur_line and s.character < cur_col) then
+            target_idx = i; break
+          end
+        end
+        target_idx = target_idx or #refs
+      end
+    end
+
+    local s = refs[target_idx].range.start
+    vim.api.nvim_win_set_cursor(0, { s.line + 1, s.character })
+  end
+
+  vim.keymap.set('n', ']]', function() goto_reference('next') end, { buffer = bufnr, desc = 'Next reference' })
+  vim.keymap.set('n', '[[', function() goto_reference('prev') end, { buffer = bufnr, desc = 'Prev reference' })
+
   local group = vim.api.nvim_create_augroup(('config-lsp-document-highlight-%d'):format(bufnr), { clear = true })
 
   vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
     group = group,
     buffer = bufnr,
-    callback = vim.lsp.buf.document_highlight,
+    callback = function()
+      local params = vim.lsp.util.make_position_params(0, 'utf-16')
+      vim.lsp.buf_request(bufnr, 'textDocument/documentHighlight', params, function(_, result)
+        vim.lsp.util.buf_highlight_references(bufnr, result or {}, 'utf-16')
+        vim.b[bufnr].lsp_references = result or {}
+      end)
+    end,
   })
 
   vim.api.nvim_create_autocmd({ 'CursorMoved', 'CursorMovedI', 'InsertEnter', 'BufLeave' }, {
