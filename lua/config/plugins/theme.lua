@@ -1,18 +1,10 @@
 return {
-  "datsfilipe/vesper.nvim",
+  "projekt0n/github-nvim-theme",
+  name = "github-theme",
   lazy = false,
   priority = 1000,
-  opts = {
-    italics = {
-      comments = false,
-      keywords = false,
-      functions = false,
-      strings = false,
-      variables = false,
-    },
-  },
-  config = function(_, opts)
-    require("vesper").setup(opts)
-    vim.cmd("colorscheme vesper")
+  config = function()
+    require("github-theme").setup()
+    vim.cmd("colorscheme github_dark_default")
   end,
 }

@@ -142,12 +142,50 @@ local function set_keymaps()
         vim.keymap.set('n', lhs, rhs, { buffer = event.buf, silent = true, desc = desc })
       end
 
-      map('gd', vim.lsp.buf.definition, '[G]oto [D]efinition')
+      local builtin = require('telescope.builtin')
+      map('gd', function()
+        local params = vim.lsp.util.make_position_params(0, 'utf-16')
+        local bufname = vim.api.nvim_buf_get_name(event.buf)
+        local cursor = vim.api.nvim_win_get_cursor(0)
+        vim.lsp.buf_request_all(event.buf, 'textDocument/definition', params, function(results)
+          for _, res in pairs(results) do
+            if res.result and #res.result > 0 then
+              local loc = res.result[1]
+              local uri = loc.uri or loc.targetUri
+              local range = loc.range or loc.targetSelectionRange
+              local same_file = uri == vim.uri_from_fname(bufname)
+              local same_pos = same_file and range
+                and range.start.line == cursor[1] - 1
+                and range.start.character == cursor[2]
+              if not same_pos then
+                return builtin.lsp_definitions()
+              end
+            end
+          end
+          vim.lsp.buf_request_all(event.buf, 'textDocument/implementation', params, function(impl_results)
+            for _, res in pairs(impl_results) do
+              if res.result and #res.result > 0 then
+                local loc = res.result[1]
+                local uri = loc.uri or loc.targetUri
+                local range = loc.range or loc.targetSelectionRange
+                local same_file = uri == vim.uri_from_fname(bufname)
+                local same_pos = same_file and range
+                  and range.start.line == cursor[1] - 1
+                  and range.start.character == cursor[2]
+                if not same_pos then
+                  return builtin.lsp_implementations()
+                end
+              end
+            end
+            builtin.lsp_references()
+          end)
+        end)
+      end, '[G]oto [D]efinition or [I]mplementation')
       map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
-      map('gr', vim.lsp.buf.references, '[G]oto [R]eferences')
-      map('gi', vim.lsp.buf.implementation, '[G]oto [I]mplementation')
+      map('gr', builtin.lsp_references, '[G]oto [R]eferences')
+      map('gi', builtin.lsp_implementations, '[G]oto [I]mplementation')
       map('K', vim.lsp.buf.hover, 'Hover docs')
-      map('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame symbol')
+      vim.keymap.set('n', '<leader>rn', function() return ':IncRename ' .. vim.fn.expand('<cword>') end, { buffer = event.buf, silent = true, expr = true, desc = '[R]e[n]ame symbol' })
       map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
 
       if client then
