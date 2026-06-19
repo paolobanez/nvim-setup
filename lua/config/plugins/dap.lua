@@ -91,7 +91,7 @@ return {
     dap.configurations.cs = {
       {
         type = 'coreclr',
-        name = 'Launch .NET',
+        name = 'Launch .NET (prompt)',
         request = 'launch',
         program = function()
           return vim.fn.input('Path to DLL: ', vim.fn.getcwd() .. '/bin/Debug/', 'file')
@@ -99,6 +99,7 @@ return {
         cwd = '${workspaceFolder}',
       },
     }
+    pcall(require, 'local.dap-hyke')
 
     -- Keymaps
     vim.keymap.set('n', '<leader>dc', dap.continue,  { desc = 'Debug: Continue' })
