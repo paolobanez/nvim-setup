@@ -10,6 +10,7 @@ M.servers = {
   'vtsls',
   'prismals',
   'tailwindcss',
+  'emmet_ls',
 }
 
 local function dotnet_root(bufnr, on_dir)
@@ -314,6 +315,10 @@ function M.setup()
         return vim.lsp.diagnostic.on_diagnostic(err, result, ctx, config)
       end,
     },
+  })
+
+  vim.lsp.config('emmet_ls', {
+    filetypes = { 'html', 'css', 'scss', 'javascriptreact', 'typescriptreact' },
   })
 
   vim.lsp.config('tailwindcss', {

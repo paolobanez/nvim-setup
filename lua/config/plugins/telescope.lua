@@ -92,6 +92,31 @@ return {
     pcall(require('telescope').load_extension, 'fzf')
 
     local builtin = require('telescope.builtin')
+    local pv = require('telescope.previewers')
+
+    local delta_status = pv.new_termopen_previewer {
+      get_command = function(entry, status)
+        local git_root = vim.fn.systemlist({ 'git', '-C', vim.fn.fnamemodify(entry.path, ':h'), 'rev-parse', '--show-toplevel' })[1]
+        local function git(args)
+          local cmd = { 'git', '-C', git_root, '-c', 'core.pager=delta', '-c', 'delta.side-by-side=false' }
+          vim.list_extend(cmd, args)
+          return cmd
+        end
+        if entry.status == '??' then
+          return git({ 'diff', '--no-index', '/dev/null', entry.path })
+        end
+        if entry.status:sub(2, 2) == ' ' then
+          return git({ 'diff', '--cached', '--', entry.value })
+        end
+        return git({ 'diff', 'HEAD', '--', entry.value })
+      end,
+    }
+
+    local delta_commit = pv.new_termopen_previewer {
+      get_command = function(entry)
+        return { 'git', '-c', 'core.pager=delta', '-c', 'delta.side-by-side=false', 'diff', entry.value .. '^!' }
+      end
+    }
 
     vim.keymap.set('n', '<leader><leader>', builtin.find_files, { desc = '[S]earch [F]iles' })
     vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
@@ -103,37 +128,34 @@ return {
     vim.keymap.set('n', '<leader>sq', builtin.quickfix, { desc = '[S]earch [Q]uickfix' })
     vim.keymap.set('n', '<leader>so', builtin.oldfiles, { desc = '[S]earch [O]ld files' })
 
-    vim.keymap.set('n', '<leader>gs', builtin.git_status, { desc = '[G]it [S]tatus' })
+    vim.keymap.set('n', '<leader>gs', function()
+      builtin.git_status({ previewer = delta_status })
+    end, { desc = '[G]it [S]tatus' })
     vim.keymap.set('n', '<leader>gb', function()
       local opts = {
+        previewer = delta_commit,
         git_command = {
-          'git',
-          '--no-pager',
-          'log',
+          'git', '--no-pager', 'log',
           '--pretty=tformat:%h%x09%an%x09%ad%x09%s',
           '--abbrev-commit',
           '--date=format-local:%Y-%m-%d %I:%M %p',
           '--follow',
         },
       }
-
       opts.entry_maker = git_commit_entry_maker(opts)
       builtin.git_bcommits(opts)
     end, { desc = '[G]it [B]uffer Commits' })
     vim.keymap.set('n', '<leader>gc', function()
       local opts = {
+        previewer = delta_commit,
         git_command = {
-          'git',
-          '--no-pager',
-          'log',
+          'git', '--no-pager', 'log',
           '--pretty=tformat:%h%x09%an%x09%ad%x09%s',
           '--abbrev-commit',
           '--date=format-local:%Y-%m-%d %I:%M %p',
-          '--',
-          '.',
+          '--', '.',
         },
       }
-
       opts.entry_maker = git_commit_entry_maker(opts)
       builtin.git_commits(opts)
     end, { desc = '[G]it [C]ommits' })

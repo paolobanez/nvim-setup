@@ -9,6 +9,7 @@ return {
       'csharpier',
       'netcoredbg',
       'js-debug-adapter',
+      'emmet-ls',
     },
   },
 }
