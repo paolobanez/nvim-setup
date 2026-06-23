@@ -8,8 +8,11 @@ vim.keymap.set(
   { desc = 'Find and replace word under cursor' }
 )
 vim.keymap.set('n', '<leader>w', ':w<CR>', { silent = true, desc = '[W]rite file' })
-vim.keymap.set('n', '<leader>q', ':bd<CR>', { silent = true, desc = '[Q]uit buffer' })
-vim.keymap.set('n', '<leader>bd', ':bd<CR>', { silent = true, desc = '[B]uffer [D]elete' })
+local function close_or_bd()
+  if #vim.api.nvim_tabpage_list_wins(0) > 1 then vim.cmd('q') else vim.cmd('bd') end
+end
+vim.keymap.set('n', '<leader>q', close_or_bd, { desc = '[Q]uit buffer' })
+vim.keymap.set('n', '<leader>bd', close_or_bd, { desc = '[B]uffer [D]elete' })
 
 -- Diagnostics
 vim.keymap.set('n', '<leader>dd', function()
@@ -23,6 +26,10 @@ vim.keymap.set('n', '-', '<cmd>Oil<CR>', { desc = 'Open parent directory' })
 -- Buffer navigation
 vim.keymap.set('n', '<S-l>', ':bn<CR>', { desc = 'Switches to next buffer' })
 vim.keymap.set('n', '<S-h>', ':bp<CR>', { desc = 'Switches to previous buffer' })
+
+-- Split windows
+vim.keymap.set('n', '<C-\\>', '<cmd>vsplit<CR>', { desc = 'Vertical split' })
+vim.keymap.set('n', '<C-->', '<cmd>split<CR>', { desc = 'Horizontal split' })
 
 -- Split window navigation: CTRL+<hjkl>
 vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
