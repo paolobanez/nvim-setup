@@ -71,7 +71,6 @@ return {
           }
         },
         sorting_strategy = "ascending",
-        preview = { treesitter = true },
         file_ignore_patterns = { 'undodir/.*', 'node_modules', '.next', 'dist', '.git', '.turbo' },
       },
 
