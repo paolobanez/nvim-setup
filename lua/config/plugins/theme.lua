@@ -1,9 +1,9 @@
 return {
-  "navarasu/onedark.nvim",
+  "daltonmenezes/aura-theme",
   lazy = false,
   priority = 1000,
-  config = function()
-    require("onedark").setup({ style = "dark" })
-    require("onedark").load()
+  config = function(plugin)
+    vim.opt.rtp:append(plugin.dir .. "/packages/neovim")
+    vim.cmd.colorscheme("aura-dark")
   end,
 }

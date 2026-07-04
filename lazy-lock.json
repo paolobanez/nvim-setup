@@ -1,5 +1,6 @@
 {
   "Comment.nvim": { "branch": "master", "commit": "e30b7f2008e52442154b66f7c519bfd2f1e32acb" },
+  "aura-theme": { "branch": "main", "commit": "20924aa0a43975420edd0e0b2f919e07a3eff9c9" },
   "blink.cmp": { "branch": "main", "commit": "78336bc89ee5365633bcf754d93df01678b5c08f" },
   "conform.nvim": { "branch": "master", "commit": "619363c30309d29ffa631e67c8183f2a72caa373" },
   "gitsigns.nvim": { "branch": "main", "commit": "2038c666bd9d8a0b7349a0b6ee00dc83104b9ecf" },
@@ -24,7 +25,6 @@
   "nvim-ts-context-commentstring": { "branch": "main", "commit": "6141a40173c6efa98242dc951ed4b6f892c97027" },
   "nvim-web-devicons": { "branch": "master", "commit": "dfbfaa967a6f7ec50789bead7ef87e336c1fa63c" },
   "oil.nvim": { "branch": "master", "commit": "b73018b75affd13fa38e2fc94ef753b465f770d7" },
-  "onedark.nvim": { "branch": "master", "commit": "df4792accde9db0043121f32628bcf8e645d9aea" },
   "persistence.nvim": { "branch": "main", "commit": "b20b2a7887bd39c1a356980b45e03250f3dce49c" },
   "plenary.nvim": { "branch": "master", "commit": "74b06c6c75e4eeb3108ec01852001636d85a932b" },
   "supermaven-nvim": { "branch": "main", "commit": "07d20fce48a5629686aefb0a7cd4b25e33947d50" },

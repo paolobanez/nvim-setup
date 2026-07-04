@@ -1,5 +1,20 @@
 local M = {}
 
+local Client = require('vim.lsp.client')
+local orig_write_error = Client.write_error
+Client.write_error = function(self, code, err)
+  if code == vim.lsp.rpc.client_errors.INVALID_SERVER_MESSAGE then return end
+  orig_write_error(self, code, err)
+end
+
+do
+  local _n = vim.notify_once
+  vim.notify_once = function(msg, ...)
+    if type(msg) == 'string' and msg:find('position_encoding param is required', 1, true) then return end
+    return _n(msg, ...)
+  end
+end
+
 M.servers = {
   'omnisharp',
   'cssls',
@@ -192,6 +207,14 @@ local function set_keymaps()
     group = group,
     callback = function(event)
       local client = vim.lsp.get_client_by_id(event.data.client_id)
+      if client and client.name == 'omnisharp' then
+        client.on_error = function(code)
+          if code ~= vim.lsp.rpc.client_errors.INVALID_SERVER_MESSAGE then
+            vim.notify(('omnisharp error: %d'):format(code), vim.log.levels.WARN)
+          end
+        end
+      end
+
       local map = function(lhs, rhs, desc)
         vim.keymap.set('n', lhs, rhs, { buffer = event.buf, silent = true, desc = desc })
       end
@@ -253,6 +276,7 @@ local function set_keymaps()
 end
 
 function M.setup()
+  require('vim.lsp.log').set_level(vim.log.levels.ERROR)
   local capabilities = require('blink.cmp').get_lsp_capabilities()
 
   set_keymaps()
@@ -332,7 +356,7 @@ function M.setup()
     },
     settings = {
       RoslynExtensionsOptions = {
-        EnableAnalyzersSupport = true,
+        EnableAnalyzersSupport = false, -- crashes on macOS: ShadowCopyAnalyzerAssemblyLoader named mutex fails
         EnableImportCompletion = true,
         AnalyzeOpenDocumentsOnly = true,
       },
@@ -353,6 +377,12 @@ function M.setup()
   for _, server in ipairs(M.servers) do
     vim.lsp.enable(server)
   end
+
+  vim.api.nvim_create_user_command('LspRestart', function(opts)
+    local name = opts.args ~= '' and opts.args or nil
+    vim.lsp.stop_client(vim.lsp.get_clients({ name = name }))
+    vim.cmd('e')
+  end, { nargs = '?', complete = function() return M.servers end })
 end
 
 return M
